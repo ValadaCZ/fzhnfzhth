@@ -88,3 +88,4 @@ const xrhelper = scene.createDefaultXRExperienceAsync({
 
 //environment1.setMainColor(new Color3.FromHexString(#74b9ff"));
 //scene.debugLayer.show();
+//testik/
