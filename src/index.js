@@ -4,7 +4,6 @@ import "./styles.css"; // keep this here!
 import {
   Engine,
   Scene,
-  UniversalCamera,
   MeshBuilder,
   StandardMaterial,
   DirectionalLight,
@@ -13,79 +12,69 @@ import {
   SceneLoader,
   DeviceOrientationCamera,
   Mesh,
-  Animation
+  Animation,
+  Space,
+  Axis
 } from "@babylonjs/core";
 import "@babylonjs/inspector";
 
-//canvas je grafické okno, to rozáhneme přes obrazovku
 const canvas = document.getElementById("renderCanvas");
 canvas.width = window.innerWidth;
 canvas.height = window.innerHeight;
 
 const engine = new Engine(canvas, true);
 
-//scéna neměnit
 const scene = new Scene(engine);
-// Default Environment
 
-//vytoření kamery v pozici -5 (dozadu)
 const camera = new DeviceOrientationCamera(
   "kamera",
-  new Vector3(1, 1, 10),
+  new Vector3(100, 5, 70),
   scene
 );
 
-//zaměřit kameru do středu
-camera.setTarget(new Vector3(0, 1, 0));
+camera.setTarget(new Vector3(0, 0, 6));
 
-//spojení kamery a grafikcého okna
 camera.attachControl(canvas, true);
 
-//zde přídáme cyklus for
-
-//světlo
 const light1 = new DirectionalLight(
   "DirectionalLight",
   new Vector3(-1, -1, -1),
   scene
 );
 
-var freza;
-//var i=0;
-//for (i=0;i<5;i++){
-
-SceneLoader.ImportMesh("", "public/", "endmill.glb", scene, function (
+var vreten = MeshBuilder.CreateCylinder("vreten", { diameter: 0.0001 });
+SceneLoader.ImportMesh("", "public/", "vreten.obj", scene, function (
   newMeshes
 ) {
   // Pozice, měřítko a rotace
   newMeshes[0].scaling = new Vector3(0.15, 0.15, 0.175);
   newMeshes[0].rotate(new Vector3(-1, 0, 0), Math.PI / 2);
-  newMeshes[0].position.z = -2;
-  newMeshes[0].position.x = 1;
-  freza = newMeshes[0];
-
-  var i = 0;
-  for (i = 0; i < 5; i++) {
-    newMeshes[0].clone("freza" + i, newMeshes[0].parent, false);
-    freza.position.x = 1 - 1 * i;
-  }
+  newMeshes[0].position.z = 0;
+  newMeshes[0].position.x = 0;
+  newMeshes[0].position.y = 30;
+  vreten = newMeshes[0];
+});
+var vreten2 = MeshBuilder.CreateCylinder("vreten2", { diameter: 0.0001 });
+SceneLoader.ImportMesh("", "public/", "vreten.obj", scene, function (
+  newMeshes
+) {
+  // Pozice, měřítko a rotace
+  newMeshes[0].scaling = new Vector3(0.15, 0.15, 0.175);
+  newMeshes[0].rotate(new Vector3(1, 0, 0), Math.PI / 2);
+  newMeshes[0].position.z = 0;
+  newMeshes[0].position.x = 0;
+  newMeshes[0].position.y = 0;
+  vreten2 = newMeshes[0];
 });
 
-scene.registerBeforeRender(function () {});
-//zde uděláme animaci
+scene.registerBeforeRender(function () {
+  vreten.rotate(Axis.Y, 0.1, Space.WORLD);
+  vreten2.rotate(Axis.Y, 0.1, Space.WORLD);
+});
 
-// povinné vykreslování
 engine.runRenderLoop(function () {
   scene.render();
 });
 const environment1 = scene.createDefaultEnvironment({
   enableGroundShadow: true
 });
-// zde uděláme VR prostředí
-const xrhelper = scene.createDefaultXRExperienceAsync({
-  floorMeshes: environment1.ground
-});
-
-//environment1.setMainColor(new Color3.FromHexString(#74b9ff"));
-//scene.debugLayer.show();
-//testik/
